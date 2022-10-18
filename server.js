@@ -1,14 +1,15 @@
 const express = require('express')
 const fs = require("fs");
 const path = require('path');
-const notesData = require('./db/db.json');
+
 const app = express()
 const uuid = require('./helpers/uuid');
-const PORT = process.env.port || 3013;
+const PORT = process.env.port || 3035;
 
 // Sets up the Express app to handle data parsing (to send data back and forth on the internet)
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // Letting express server know that all static content/client-side related files will live in the 'public' folder
 app.use(express.static('public'));
@@ -25,15 +26,14 @@ app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, './public/notes.html'));
   });
 
-app.get('/api/notes', (req, res) => res.json (notesData));
+
 
 // GET request for notes
 app.get('/api/notes', (req, res) => {
    // Inform the client
-  res.json(`${req.method} request received to get notes`)
-
-  // Sending all notes to the client
-  return res.json(notesData);
+   fs.readFile('./db/db.json', 'utf8', (err, data) => {
+res.json(JSON.parse(data))
+   })
 });
 
 
@@ -66,9 +66,7 @@ app.post('/api/notes', (req, res) => {
         parsedNotes.push(newNote);
 
         // Write updated notes back to the file
-        fs.writeFile(
-          './db/db.json',
-          JSON.stringify(parsedNotes, null, 4),
+        fs.writeFile('./db/db.json', JSON.stringify(parsedNotes, null, 4),
           (writeErr) =>
             writeErr
               ? console.error(writeErr)
@@ -89,4 +87,29 @@ app.post('/api/notes', (req, res) => {
   }
 });
 
+// // Delete a note
+// app.delete('/api/notes/:id', (req, res) => {
+//   const sql = `DELETE FROM notes WHERE id = ?`;
+//   const params = [req.params.id];
+  
+//   db.query(sql, params, (err, result) => {
+//     if (err) {
+//       res.statusMessage(400).json({ error: res.message });
+//     } else if (!result.affectedRows) {
+//       res.json({
+//       message: 'Note not found'
+//       });
+//     } else {
+//       res.json({
+//         message: 'deleted',
+//         changes: result.affectedRows,
+//         id: req.params.id
+//       });
+//     }
+//   });
+// });
+
+
 app.listen(PORT, () => console.log(`App listening at http://localhost:${PORT}`));
+
+// window.location object
