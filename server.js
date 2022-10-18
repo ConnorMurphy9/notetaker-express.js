@@ -4,7 +4,7 @@ const path = require('path');
 const notesData = require('./db/db.json')
 const app = express()
 
-const PORT = 3010;
+const PORT = 3011;
 
 // Sets up the Express app to handle data parsing (to send data back and forth on the internet)
 app.use(express.urlencoded({ extended: true }));
@@ -31,33 +31,57 @@ app.get('/api/notes', (req, res) => {
   res.json(`${req.method} request received to get notes`)
 });
 
-// app.post('/api/notes', (req, res) => {
-//   res.json(${req.method} request received to get reviews);});
 
-// POST request
+// POST request to add a note
 app.post('/api/notes', (req, res) => {
-    // Let the client know that their POST request was received
-    res.json(`${req.method} request received`);
-  
-    // Show the user agent information in the terminal
-    console.info(req.rawHeaders);
-  
-    // Log our request to the terminal
-    console.info(`${req.method} request received`);
-  });
-   
-  // Check if there is anything in the response body
-  // if (req.body && req.body.product) {
-  //   response = {
-  //     status: 'success',
-  //     data: req.body,
-  //   };
-  //   res.json(`Review for ${response.data.product} has been added!`);
-  // } else {
-  //   res.json('Request body must at least contain a product name');
-  // }
+  // Log that a POST request was received
+  console.info(`${req.method} request received to add a note`);
 
-  // Log the response body to the console
-  // console.log(req.body);
+  // Destructuring assignment for the items in req.body
+  const { title, text } = req.body;
 
-app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
+  // If all the required properties are present
+  if (title && text) {
+    // Variable for the object we will save
+    const newNote = {
+      title,
+      text,
+      note_id: notesData(),
+    };
+
+    // Obtain existing notes
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        // Convert string into JSON object
+        const parsedNotes = JSON.parse(data);
+
+        // Add a new note
+        parsedNotes.push(newNote);
+
+        // Write updated notes back to the file
+        fs.writeFile(
+          './db/db.json',
+          JSON.stringify(parsedNotes, null, 4),
+          (writeErr) =>
+            writeErr
+              ? console.error(writeErr)
+              : console.info('Successfully updated notes!')
+        );
+      }
+    });
+
+    const response = {
+      status: 'success',
+      body: newNote,
+    };
+
+    console.log(response);
+    res.status(201).json(response);
+  } else {
+    res.status(500).json('Error in posting note');
+  }
+});
+
+app.listen(PORT, () => console.log(`App listening at http://localhost:${PORT}`));
