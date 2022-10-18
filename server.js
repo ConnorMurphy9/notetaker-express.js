@@ -1,10 +1,10 @@
 const express = require('express')
 const fs = require("fs");
 const path = require('path');
-const notesData = require('./db/db.json')
+const notesData = require('./db/db.json');
 const app = express()
-
-const PORT = 3011;
+const uuid = require('./helpers/uuid');
+const PORT = process.env.port || 3013;
 
 // Sets up the Express app to handle data parsing (to send data back and forth on the internet)
 app.use(express.urlencoded({ extended: true }));
@@ -25,10 +25,15 @@ app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, './public/notes.html'));
   });
 
-// app.get('/api/notes', (req, res) => res.json (notesData));
+app.get('/api/notes', (req, res) => res.json (notesData));
 
+// GET request for notes
 app.get('/api/notes', (req, res) => {
+   // Inform the client
   res.json(`${req.method} request received to get notes`)
+
+  // Sending all notes to the client
+  return res.json(notesData);
 });
 
 
@@ -46,7 +51,7 @@ app.post('/api/notes', (req, res) => {
     const newNote = {
       title,
       text,
-      note_id: notesData(),
+      note_id: uuid(),
     };
 
     // Obtain existing notes
