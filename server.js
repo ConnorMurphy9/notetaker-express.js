@@ -14,9 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 // Letting express server know that all static content/client-side related files will live in the 'public' folder
 app.use(express.static('public'));
 
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, './public/index.html'));
-//   });
+
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'))
@@ -51,7 +49,7 @@ app.post('/api/notes', (req, res) => {
     const newNote = {
       title,
       text,
-      note_id: uuid(),
+      id: uuid(),
     };
 
     // Obtain existing notes
@@ -89,27 +87,30 @@ app.post('/api/notes', (req, res) => {
 
 // // Delete a note
 // app.delete('/api/notes/:id', (req, res) => {
-//   const sql = `DELETE FROM notes WHERE id = ?`;
-//   const params = [req.params.id];
+//   // const sql = `DELETE FROM notes WHERE id = ?`;
+//   // const params = [req.params.id];
   
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.statusMessage(400).json({ error: res.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//       message: 'Note not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'deleted',
-//         changes: result.affectedRows,
-//         id: req.params.id
-//       });
-//     }
-//   });
+//   // db.query(sql, params, (err, result) => {
+//   //   if (err) {
+//   //     res.statusMessage(400).json({ error: res.message });
+//   //   } else if (!result.affectedRows) {
+//   //     res.json({
+//   //     message: 'Note not found'
+//   //     });
+//   //   } else {
+//   //     res.json({
+//   //       message: 'deleted',
+//   //       changes: result.affectedRows,
+//   //       id: req.params.id
+//   //     });
+//   //   }
+//   res.send('Delete request sent to ')
 // });
+// // app.delete(path, callback [, callback ...])
+// // app.use('/abcd', (req, res, next) => {
+// //   next()
+// // })
+
 
 
 app.listen(PORT, () => console.log(`App listening at http://localhost:${PORT}`));
-
-// window.location object
