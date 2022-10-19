@@ -4,7 +4,7 @@ const path = require('path');
 
 const app = express()
 const uuid = require('./helpers/uuid');
-const PORT = process.env.port || 3035;
+const PORT = process.env.PORT || 3035;
 
 // Sets up the Express app to handle data parsing (to send data back and forth on the internet)
 app.use(express.json());
